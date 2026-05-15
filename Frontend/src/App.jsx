@@ -1,16 +1,22 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CreateBlogs from "./pages/createBlog";
 
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Home from "./pages/Home";
+import MyBlogs from "./pages/MyBlogs";
 
 const App = () => {
+  const token = localStorage.getItem("token");
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        {/*dynamic route*/}
+        <Route path="/signup" element={token ? <Home /> : <Signup />} />
+        <Route path="/" element={token ? <Home /> : <Login />} />
         <Route
           path="/profile"
           element={
@@ -19,6 +25,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/create" element={<CreateBlogs />} />
+        <Route path="/myposts" element={<MyBlogs />} />
       </Routes>
     </BrowserRouter>
   );

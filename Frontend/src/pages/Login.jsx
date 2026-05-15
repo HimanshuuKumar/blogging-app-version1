@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:4000/api/v1/login", {
+      const res = await axios.post("http://localhost:4000/api/users/login", {
         email,
         password,
       });
@@ -22,12 +23,10 @@ const Login = () => {
 
       alert(res.data.message);
 
-      navigate("/profile");
-      s;
+      navigate("/");
+      window.location.reload();
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
-
-      localStorage.removeItem("token");
     }
   };
 
@@ -57,9 +56,9 @@ const Login = () => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-blue-500 font-medium"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? <FaEye size={20} /> : <FaEyeSlash size={20} />}
           </button>
         </div>
         {/*password end*/}
@@ -69,7 +68,7 @@ const Login = () => {
 
         <p className="text-center mt-4">
           Don't have account?{" "}
-          <Link to="/" className="text-blue-500">
+          <Link to="/signup" className="text-blue-500">
             Signup
           </Link>
         </p>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -22,13 +23,12 @@ const Signup = () => {
       formData.append("profilePic", profilePic);
 
       const res = await axios.post(
-        "http://localhost:4000/api/v1/signup",
+        "http://localhost:4000/api/users/signup",
         formData,
       );
-
       alert(res.data.message);
 
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -67,9 +67,9 @@ const Signup = () => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-blue-500 font-medium"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? <FaEye size={20} /> : <FaEyeSlash size={20} />}
           </button>
         </div>
         {/*password end*/}
@@ -85,7 +85,7 @@ const Signup = () => {
 
         <p className="text-center mt-4">
           Already have account?{" "}
-          <Link to="/login" className="text-blue-500">
+          <Link to="/" className="text-blue-500">
             Login
           </Link>
         </p>

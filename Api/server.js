@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ app.use(express.json());
 
 //routers
 
-app.use("/api/v1", userRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/blogs", blogRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`server is running on port ${port}`));
