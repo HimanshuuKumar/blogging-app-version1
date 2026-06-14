@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:4000/api/users/login", {
+      const res = await axios.post("https://my-complete-blog-app.onrender.com/api/users/login", {
         email,
         password,
       });
