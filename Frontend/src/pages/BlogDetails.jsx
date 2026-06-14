@@ -36,7 +36,7 @@ const BlogDetails = () => {
 
   const fetchBlog = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/blogs/${id}`);
+      const res = await axios.get(`https://my-complete-blog-app.onrender.com/api/blogs/${id}`);
       setBlog(res.data);
     } catch (error) {
       console.log(error);
@@ -53,7 +53,7 @@ const BlogDetails = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        `http://localhost:4000/api/blogs/like/${id}`,
+        `https://my-complete-blog-app.onrender.com/api/blogs/like/${id}`,
         {},
         { headers: { Authorization: token } },
       );
@@ -73,7 +73,7 @@ const BlogDetails = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        `http://localhost:4000/api/blogs/comment/${id}`,
+        `https://my-complete-blog-app.onrender.com/api/blogs/comment/${id}`,
         { text: comment },
         { headers: { Authorization: token } },
       );
@@ -88,7 +88,7 @@ const BlogDetails = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.delete(
-        `http://localhost:4000/api/blogs/comment/${id}/${commentId}`,
+        `https://my-complete-blog-app.onrender.com/api/blogs/comment/${id}/${commentId}`,
         { headers: { Authorization: token } },
       );
       setBlog({ ...blog, comments: res.data });
