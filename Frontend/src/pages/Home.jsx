@@ -17,7 +17,7 @@ const Home = () => {
       const res = await axios.get("https://my-complete-blog-app.onrender.com/api/blogs/getblogs", {
         headers: { Authorization: token },
       });
-      setBlogs(res.data.blogs);
+      setBlogs(res.data.blogs || []);
     } catch (error) {
       console.log(error);
     }
