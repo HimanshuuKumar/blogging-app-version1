@@ -43,7 +43,7 @@ const Signup = () => {
       }
 
       const res = await axios.post(
-        "http://localhost:4000/api/users/signup",
+        "https://my-complete-blog-app.onrender.com/api/users/signup",
         formData,
       );
 
