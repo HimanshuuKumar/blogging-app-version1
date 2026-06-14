@@ -22,7 +22,7 @@ const CreateBlogs = () => {
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-        "http://localhost:4000/api/blogs/create",
+        "https://my-complete-blog-app.onrender.com/api/blogs/create",
         formData,
         {
           headers: {
