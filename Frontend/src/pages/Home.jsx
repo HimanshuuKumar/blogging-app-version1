@@ -14,7 +14,7 @@ const Home = () => {
   const fetchBlogs = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get("http://localhost:4000/api/blogs/getblogs", {
+      const res = await axios.get("https://my-complete-blog-app.onrender.com/api/blogs/getblogs", {
         headers: { Authorization: token },
       });
       setBlogs(res.data.blogs);
