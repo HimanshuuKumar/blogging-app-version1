@@ -54,7 +54,8 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    localStorage.removeItem("user");
+    navigate("/login");
     window.location.reload();
   };
 

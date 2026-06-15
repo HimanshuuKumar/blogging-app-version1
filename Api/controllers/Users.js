@@ -40,7 +40,20 @@ export const signup = async (req, res) => {
       password: hashPass,
       profilePic: imageUrl,
     });
-    res.json({ message: "user registered successfully", newUser });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      message: "user registered successfully",
+      newUser,
+      token,
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        profilepic: newUser.profilePic,
+      },
+    });
   } catch (error) {
     res.json({ message: error.message });
   }

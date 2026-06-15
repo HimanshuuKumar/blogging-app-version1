@@ -19,7 +19,7 @@ router.post("/create", auth, upload.single("blogimg"), createBlog);
 
 router.get("/me", auth, getMyBlogs);
 
-router.get("/getblogs", auth, getAllBlogs);
+router.get("/getblogs", getAllBlogs);
 
 router.delete("/deleteblogs/:id", auth, DeleteBlogs);
 

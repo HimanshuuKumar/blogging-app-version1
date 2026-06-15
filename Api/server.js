@@ -12,7 +12,10 @@ const app = express();
 app.use(cors());
 
 mongoose
-  .connect(process.env.MONGO_URL, { dbName: "Blog_Mern_App" })
+  .connect(
+    "mongodb+srv://hk3196316_db_user:7Td4ekJv6Hha49DP@cluster0.u5qompi.mongodb.net/",
+    { dbName: "Blog_Mern_App" },
+  )
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.log(err));
 

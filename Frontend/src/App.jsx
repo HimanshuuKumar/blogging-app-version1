@@ -16,8 +16,9 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         {/*dynamic route*/}
-        <Route path="/signup" element={token ? <Home /> : <Signup />} />
-        <Route path="/" element={token ? <Home /> : <Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home />} />
         <Route
           path="/profile"
           element={

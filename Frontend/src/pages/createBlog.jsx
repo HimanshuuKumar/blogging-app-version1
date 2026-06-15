@@ -51,10 +51,10 @@ const CreateBlogs = () => {
     <>
       <Header />
 
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="sm:min-h-screen flex items-center justify-center bg-gray-100 px-2 sm:px-4 pt-10 sm:py-10">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-xl p-6 w-full max-w-xl"
+          className="bg-white shadow-lg rounded-xl p-5 w-full max-w-xl"
         >
           <h1 className="text-2xl font-bold mb-6 text-center text-blue-600">
             Create New Post
