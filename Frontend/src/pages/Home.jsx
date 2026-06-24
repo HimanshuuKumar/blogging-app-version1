@@ -4,12 +4,26 @@ import Header from "../components/Header";
 import BlogDescription from "../components/BlogDescription";
 import { useNavigate } from "react-router-dom";
 
-// Memoized time formatter - prevents recalculation on every render
+// Default avatar generator using UI Avatars (generates image with initials)
+const getDefaultAvatar = (name = "User") => {
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=128`;
+};
+
+// Alternative: DiceBear for more styled avatars (uncomment if preferred)
+// const getDefaultAvatar = (name = "User", seed = "") => {
+//   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed || name)}`;
+// };
+
 const TimeAgo = memo(({ createdAt }) => {
   const [timeAgo, setTimeAgo] = useState(() => formatTimeAgo(createdAt));
 
   useEffect(() => {
-    // Update every minute for recent posts
     const timer = setInterval(() => {
       setTimeAgo(formatTimeAgo(createdAt));
     }, 60000);
@@ -35,7 +49,6 @@ function formatTimeAgo(createdAt) {
   return created.toLocaleDateString();
 }
 
-// Skeleton loader for better perceived performance
 const BlogSkeleton = () => (
   <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-pulse">
     <div className="flex items-center gap-4 px-4 py-3">
@@ -60,13 +73,21 @@ const BlogSkeleton = () => (
   </div>
 );
 
-// Memoized blog card to prevent unnecessary re-renders
+// Memoized blog card
 const BlogCard = memo(({ blog, onNavigate }) => {
   const navigate = useNavigate();
 
   const handleClick = useCallback(() => {
     navigate(`/blog/${blog._id}`);
   }, [navigate, blog._id]);
+
+  // Handle profile picture with fallback
+  const profilePic = blog.user?.profilePic
+    ? blog.user.profilePic.replace(
+        "/upload/",
+        "/upload/w_100,h_100,c_fill,q_auto,f_auto/",
+      )
+    : getDefaultAvatar(blog.user?.name);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
@@ -79,17 +100,18 @@ const BlogCard = memo(({ blog, onNavigate }) => {
             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-red-500 via-pink-500 to-orange-400 blur-[2px] opacity-80" />
             <img
               loading="lazy"
-              src={blog.user?.profilePic?.replace(
-                "/upload/",
-                "/upload/w_100,h_100,c_fill,q_auto,f_auto/",
-              )}
+              src={profilePic}
               alt={blog.user?.name || "User"}
               className="relative w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg bg-gray-200"
+              onError={(e) => {
+                // Ultimate fallback if even the default avatar fails
+                e.target.src = getDefaultAvatar("User");
+              }}
             />
           </div>
           <div>
             <h3 className="font-semibold text-gray-800 text-[15px] tracking-wide">
-              {blog.user?.name}
+              {blog.user?.name || "Anonymous"}
             </h3>
             <TimeAgo createdAt={blog.createdAt} />
           </div>
@@ -129,9 +151,7 @@ const BlogCard = memo(({ blog, onNavigate }) => {
             <span>🔁</span> Repost
           </button>
         </div>
-        <button className="hover:text-gray-700 transition">
-          🔖 Save
-        </button>
+        <button className="hover:text-gray-700 transition">🔖 Save</button>
       </div>
     </div>
   );
@@ -144,18 +164,15 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
-  
+
   const navigate = useNavigate();
   const abortControllerRef = useRef(null);
-  const observerRef = useRef(null);
   const lastBlogRef = useRef(null);
 
-  // Cache key for localStorage
   const CACHE_KEY = "blogs_cache";
-  const CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+  const CACHE_TIME = 5 * 60 * 1000;
 
   const fetchBlogs = useCallback(async (pageNum = 1, isRefresh = false) => {
-    // Cancel previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -163,7 +180,6 @@ const Home = () => {
 
     const token = localStorage.getItem("token");
 
-    // Check cache for initial load
     if (pageNum === 1 && !isRefresh) {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -173,7 +189,6 @@ const Home = () => {
           setHasMore(data.hasMore);
           setLoading(false);
           setInitialLoad(false);
-          // Silently refresh in background
           fetchBlogs(1, true);
           return;
         }
@@ -189,25 +204,22 @@ const Home = () => {
         {
           headers: { Authorization: token },
           signal: abortControllerRef.current.signal,
-        }
+        },
       );
 
       const newBlogs = res.data.blogs || [];
       const totalPages = res.data.totalPages || 1;
 
-      setBlogs((prev) => 
-        pageNum === 1 ? newBlogs : [...prev, ...newBlogs]
-      );
+      setBlogs((prev) => (pageNum === 1 ? newBlogs : [...prev, ...newBlogs]));
       setHasMore(pageNum < totalPages);
 
-      // Cache first page
       if (pageNum === 1) {
         localStorage.setItem(
           CACHE_KEY,
           JSON.stringify({
             data: { blogs: newBlogs, hasMore: pageNum < totalPages },
             timestamp: Date.now(),
-          })
+          }),
         );
       }
     } catch (err) {
@@ -216,7 +228,7 @@ const Home = () => {
       setError(
         err.response?.status === 401
           ? "Session expired. Please login again."
-          : "Failed to load blogs. Pull to retry."
+          : "Failed to load blogs. Pull to retry.",
       );
     } finally {
       setLoading(false);
@@ -224,7 +236,6 @@ const Home = () => {
     }
   }, []);
 
-  // Initial load
   useEffect(() => {
     fetchBlogs();
     return () => {
@@ -234,7 +245,6 @@ const Home = () => {
     };
   }, [fetchBlogs]);
 
-  // Infinite scroll observer
   useEffect(() => {
     if (loading || !hasMore) return;
 
@@ -248,7 +258,7 @@ const Home = () => {
           });
         }
       },
-      { rootMargin: "200px" } // Start loading before reaching bottom
+      { rootMargin: "200px" },
     );
 
     if (lastBlogRef.current) {
@@ -275,7 +285,6 @@ const Home = () => {
 
       <div className="bg-gray-100 min-h-screen py-6">
         <div className="max-w-2xl mx-auto space-y-4 px-4">
-          {/* Header with refresh */}
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">Home • Feed</div>
             <button
@@ -287,7 +296,6 @@ const Home = () => {
             </button>
           </div>
 
-          {/* Error State */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
               <p className="text-red-600 text-sm mb-2">{error}</p>
@@ -300,9 +308,7 @@ const Home = () => {
             </div>
           )}
 
-          {/* Content */}
           {initialLoad ? (
-            // Skeleton loading for initial load
             Array.from({ length: 3 }).map((_, i) => (
               <BlogSkeleton key={`skeleton-${i}`} />
             ))
@@ -323,14 +329,12 @@ const Home = () => {
                 </div>
               ))}
 
-              {/* Loading more indicator */}
               {loading && !initialLoad && (
                 <div className="flex justify-center py-4">
                   <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
                 </div>
               )}
 
-              {/* End of feed */}
               {!hasMore && blogs.length > 0 && (
                 <div className="text-center py-4 text-gray-400 text-sm">
                   — You've reached the end —
