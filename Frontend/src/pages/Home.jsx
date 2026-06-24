@@ -11,7 +11,7 @@ const getDefaultAvatar = (name = "User") => {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 1);
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=128`;
 };
 
